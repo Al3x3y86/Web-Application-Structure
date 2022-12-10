@@ -1,6 +1,7 @@
 package my.sky.web_application_structure.repository;
 
 import my.sky.web_application_structure.model.Recipe;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -8,14 +9,26 @@ import java.util.Map;
 
 @Repository
 public class RecipeRepository implements IdRepository<Recipe> {
+
+    static Long idCounter = 1L;
     private final Map<Long, Recipe> recipeStorage = new HashMap<>();
 
+    private boolean checkInputObject(Recipe recipe) {
+        return StringUtils.isNotBlank(recipe.getTitleRecipe()) &
+                StringUtils.isNotEmpty(recipe.getTitleRecipe()) &
+                recipe.getCookingTimeMinutes() > 0 &
+                !recipe.getIngredientsList().isEmpty() &
+                !recipe.getCookingInstruction().isEmpty();
+    }
+
     @Override
-    public Map<Long, Recipe> add(Long id, Recipe recipe) {
-        if (!recipeStorage.containsKey(id) & recipe != null) {
-            recipeStorage.put(id, recipe);
+    public Map<Long, Recipe> add(Recipe recipe) {
+        if (checkInputObject(recipe) & !recipeStorage.containsValue(recipe)) {
+            recipeStorage.put(idCounter, recipe);
+            idCounter++;
+            return recipeStorage;
         }
-        return recipeStorage;
+        return null;
     }
 
     @Override
@@ -30,7 +43,7 @@ public class RecipeRepository implements IdRepository<Recipe> {
     @Override
     public Map<Long, Recipe> update(Long id, Recipe recipe) {
         if (!recipeStorage.containsKey(id)){
-            throw new IllegalArgumentException("С таким id рецепт отсутствует");
+            throw new IllegalArgumentException("С таким номером рецепт отсутствует");
         }
         if (recipe != null){
             recipeStorage.remove(id);
@@ -46,12 +59,15 @@ public class RecipeRepository implements IdRepository<Recipe> {
         if (recipeStorage.containsKey(id)){
             recipeStorage.remove(id);
         } else {
-            throw new IllegalArgumentException("С таким id рецепт отсутствует");
+            throw new IllegalArgumentException("С таким номером рецепт отсутствует");
         }
     }
 
     @Override
     public Map<Long, Recipe> viewAll() {
+        if (!recipeStorage.isEmpty()) {
+            return recipeStorage;
+        }
         return null;
     }
 }

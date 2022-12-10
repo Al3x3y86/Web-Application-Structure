@@ -22,8 +22,8 @@ public class RecipeService {
         return recipe;
     }
 
-    public Map<Long, Recipe> addRecipe(Long recipeID, Recipe recipe) {
-        return recipeRepository.add(recipeID, recipe);
+    public Map<Long, Recipe> addRecipe(Recipe recipe) {
+        return recipeRepository.add(recipe);
     }
 
     public Map<Long, Recipe> updateRecipe (Long recipeID, Recipe recipe){

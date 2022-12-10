@@ -18,8 +18,8 @@ public class IngredientsService {
         return ingredientsRepository.findById(ingredientId);
     }
 
-    public Map<Long, Ingredient> createIngredient(Long ingredientID, Ingredient ingredient) {
-        return ingredientsRepository.add(ingredientID, ingredient);
+    public Map<Long, Ingredient> addIngredient(Ingredient ingredient) {
+        return ingredientsRepository.add(ingredient);
     }
 
     public Map<Long, Ingredient> updateIngredient (Long ingredientID, Ingredient ingredient){

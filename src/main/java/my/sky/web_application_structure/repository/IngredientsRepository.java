@@ -1,6 +1,7 @@
 package my.sky.web_application_structure.repository;
 
 import my.sky.web_application_structure.model.Ingredient;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -8,49 +9,54 @@ import java.util.Map;
 
 @Repository
 public class IngredientsRepository implements IdRepository<Ingredient> {
+
+    static Long idCounter = 1L;
     private final Map<Long, Ingredient> ingredientsStorage = new HashMap<>();
 
     {
-        ingredientsStorage.put(1L, new Ingredient("Творог", 350, "г"));
-        ingredientsStorage.put(2L, new Ingredient("Куриное яйцо", 2, "штуки"));
-        ingredientsStorage.put(3L, new Ingredient("Пшеничная мука", 6, "столовых ложек"));
-        ingredientsStorage.put(4L, new Ingredient("Сахар", 2, "столовые ложки"));
-        ingredientsStorage.put(5L, new Ingredient("Специи", 0, "по вкусу"));
-        ingredientsStorage.put(6L, new Ingredient("Консервированная фасоль", 400, "г"));
-        ingredientsStorage.put(7L, new Ingredient("Лимон", 1, "штука"));
-        ingredientsStorage.put(8L, new Ingredient("Чеснок", 2, "зубчика"));
-        ingredientsStorage.put(9L, new Ingredient("Оливковое масло", 50, "мл"));
-        ingredientsStorage.put(10L, new Ingredient("Руккола", 50, "г"));
-        ingredientsStorage.put(11L, new Ingredient("Творожный сыр", 200, "г"));
-        ingredientsStorage.put(12L, new Ingredient("Красный лук", 50, "г"));
-        ingredientsStorage.put(13L, new Ingredient("Красная чечевица", 150, "г"));
-        ingredientsStorage.put(14L, new Ingredient("Репчатый лук", 1, "головка"));
-        ingredientsStorage.put(15L, new Ingredient("Морковь", 1, "штука"));
-        ingredientsStorage.put(16L, new Ingredient("Подсолнечное масло", 30, "мл"));
-        ingredientsStorage.put(17L, new Ingredient("Сливочное масло", 15, "г"));
-        ingredientsStorage.put(18L, new Ingredient("Пшеничная мука", 30, "г"));
-        ingredientsStorage.put(19L, new Ingredient("Сливки 33%", 50, "мл"));
-        ingredientsStorage.put(20L, new Ingredient("Лимон", 0, "0.5 штуки"));
-        ingredientsStorage.put(21L, new Ingredient("Мята", 50, "по вкусу"));
-        ingredientsStorage.put(23L, new Ingredient("Помидоры", 3, "штуки"));
-        ingredientsStorage.put(24L, new Ingredient("Королевские креветки", 300, "г"));
-        ingredientsStorage.put(25L, new Ingredient("Зеленый салат", 1, "пучек"));
-        ingredientsStorage.put(26L, new Ingredient("Огурцы", 2, "штуки"));
-        ingredientsStorage.put(27L, new Ingredient("Майонез", 0, "по вкусу"));
-        ingredientsStorage.put(28L, new Ingredient("Кунжутные семечки", 3, "столовые ложки"));
+        add(new Ingredient("Творог", 350, "г"));
+        add(new Ingredient("Куриное яйцо", 2, "штуки"));
+        add(new Ingredient("Пшеничная мука", 6, "столовых ложек"));
+        add(new Ingredient("Сахар", 2, "столовые ложки"));
+        add(new Ingredient("Специи", 0, "по вкусу"));
+        add(new Ingredient("Консервированная фасоль", 400, "г"));
+        add(new Ingredient("Лимон", 1, "штука"));
+        add(new Ingredient("Чеснок", 2, "зубчика"));
+        add(new Ingredient("Оливковое масло", 50, "мл"));
+        add(new Ingredient("Руккола", 50, "г"));
+        add(new Ingredient("Творожный сыр", 200, "г"));
+        add(new Ingredient("Красный лук", 50, "г"));
+        add(new Ingredient("Красная чечевица", 150, "г"));
+        add(new Ingredient("Репчатый лук", 1, "головка"));
+        add(new Ingredient("Морковь", 1, "штука"));
+        add(new Ingredient("Подсолнечное масло", 30, "мл"));
+        add(new Ingredient("Сливочное масло", 15, "г"));
+        add(new Ingredient("Пшеничная мука", 30, "г"));
+        add(new Ingredient("Сливки 33%", 50, "мл"));
+        add(new Ingredient("Лимон", 0, "0.5 штуки"));
+        add(new Ingredient("Мята", 50, "по вкусу"));
+        add(new Ingredient("Помидоры", 3, "штуки"));
+        add(new Ingredient("Королевские креветки", 300, "г"));
+        add(new Ingredient("Зеленый салат", 1, "пучек"));
+        add(new Ingredient("Огурцы", 2, "штуки"));
+        add(new Ingredient("Майонез", 0, "по вкусу"));
+        add(new Ingredient("Кунжутные семечки", 3, "столовые ложки"));
+    }
+
+    private boolean checkInPutObject(Ingredient ingredient) {
+        return !StringUtils.isBlank(ingredient.getTitleIngredient()) &
+                !StringUtils.isEmpty(ingredient.getTitleIngredient()) &
+                ingredient.getAmount() >= 0 &
+                !StringUtils.isBlank(ingredient.getMeasureUnit()) &
+                !StringUtils.isEmpty(ingredient.getMeasureUnit());
     }
 
     @Override
-    public Map<Long, Ingredient> add(Long id, Ingredient ingredient) {
-        if (!ingredientsStorage.containsKey(id) & ingredient != null) {
-            ingredientsStorage.put(id, ingredient);
+    public Map<Long, Ingredient> add(Ingredient ingredient) {
+        if (checkInPutObject(ingredient) & !ingredientsStorage.containsValue(ingredient)) {
+            ingredientsStorage.put(idCounter, ingredient);
+            idCounter++;
             return ingredientsStorage;
-        }
-        if (ingredientsStorage.containsKey(id)){
-            throw new IllegalArgumentException("С таким номером ингредиент уже есть");
-        }
-        if (ingredient == null) {
-            throw new IllegalArgumentException("Ингредиент == null");
         }
         return null;
     }

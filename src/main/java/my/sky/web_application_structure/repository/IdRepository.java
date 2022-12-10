@@ -5,7 +5,7 @@ import java.util.Map;
 
 public interface IdRepository<T> {
 
-    Map<Long, T> add(Long id, T t);
+    Map<Long, T> add(T t);
 
     T findById(Long id);
 
