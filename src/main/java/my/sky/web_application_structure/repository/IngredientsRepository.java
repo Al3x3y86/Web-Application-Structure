@@ -63,4 +63,35 @@ public class IngredientsRepository implements IdRepository<Ingredient> {
             throw new IllegalArgumentException("Ингредиент с номером " + id + " отсутствует!");
         }
     }
+
+    @Override
+    public Map<Long, Ingredient> update(Long id, Ingredient ingredient) {
+        if (!ingredientsStorage.containsKey(id)){
+            throw new IllegalArgumentException("С таким номером ингредиент отсутствует");
+        }
+        if (ingredient != null){
+            ingredientsStorage.remove(id);
+            ingredientsStorage.put(id, ingredient);
+            return ingredientsStorage;
+        } else {
+            throw new IllegalArgumentException("Поля ингредиента для обновления не заполнены");
+        }
+    }
+
+    @Override
+    public void delete(Long id) {
+        if (ingredientsStorage.containsKey(id)){
+            ingredientsStorage.remove(id);
+        } else {
+            throw new IllegalArgumentException("С таким номером ингредиент отсутствует");
+        }
+    }
+
+    @Override
+    public Map<Long, Ingredient> viewAll() {
+        if (!ingredientsStorage.isEmpty()) {
+            return ingredientsStorage;
+        }
+        return null;
+    }
 }

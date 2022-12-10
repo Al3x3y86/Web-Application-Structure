@@ -21,4 +21,16 @@ public class IngredientsService {
     public Map<Long, Ingredient> createIngredient(Long ingredientID, Ingredient ingredient) {
         return ingredientsRepository.add(ingredientID, ingredient);
     }
+
+    public Map<Long, Ingredient> updateIngredient (Long ingredientID, Ingredient ingredient){
+        return ingredientsRepository.update(ingredientID, ingredient);
+    }
+
+    public void deleteIngredient(Long ingredientID){
+        ingredientsRepository.delete(ingredientID);
+    }
+
+    public Map<Long, Ingredient> viewAllIngredients() {
+        return ingredientsRepository.viewAll();
+    }
 }

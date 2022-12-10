@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController()
-@RequestMapping("/recipes/")
+@RequestMapping("/recipes")
 public class RecipeController {
     private final RecipeService recipeService;
 
@@ -15,13 +15,29 @@ public class RecipeController {
         this.recipeService = recipeService;
     }
 
-    @GetMapping("/viewId/{recipeId}/")
+    @GetMapping("/viewId/{recipeId}")
     public Recipe findRecipeById(@PathVariable String recipeId) {
         return recipeService.findRecipeById(Long.parseLong(recipeId));
     }
 
-    @PostMapping()
+    @PostMapping("/add")
     public Map<Long, Recipe> add(@RequestBody Recipe recipe) {
         return recipeService.addRecipe(recipe.getRecipeID(), recipe);
     }
+
+    @PutMapping("/update/{recipeId}")
+    public Map<Long, Recipe> update(@PathVariable String recipeId, @RequestBody Recipe recipe) {
+        return recipeService.updateRecipe(Long.parseLong(recipeId), recipe);
+    }
+
+    @DeleteMapping("/delete/{recipeId}")
+    public void delete(@PathVariable String recipeId) {
+        recipeService.deleteRecipe(Long.parseLong(recipeId));
+    }
+
+    @GetMapping(value = "/allRecipes")
+    public Map<Long, Recipe> getAllRecipes() {
+        return recipeService.viewAllRecipes();
+    }
+
 }

@@ -26,4 +26,32 @@ public class RecipeRepository implements IdRepository<Recipe> {
             throw new IllegalArgumentException("Рецепт с номером " + id + " отсутствует!");
         }
     }
+
+    @Override
+    public Map<Long, Recipe> update(Long id, Recipe recipe) {
+        if (!recipeStorage.containsKey(id)){
+            throw new IllegalArgumentException("С таким id рецепт отсутствует");
+        }
+        if (recipe != null){
+            recipeStorage.remove(id);
+            recipeStorage.put(id, recipe);
+            return recipeStorage;
+        } else {
+            throw new IllegalArgumentException("Поля рецепта для обновления не заполнены");
+        }
+    }
+
+    @Override
+    public void delete(Long id) {
+        if (recipeStorage.containsKey(id)){
+            recipeStorage.remove(id);
+        } else {
+            throw new IllegalArgumentException("С таким id рецепт отсутствует");
+        }
+    }
+
+    @Override
+    public Map<Long, Recipe> viewAll() {
+        return null;
+    }
 }
