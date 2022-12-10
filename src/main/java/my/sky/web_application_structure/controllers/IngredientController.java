@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController()
-@RequestMapping("ingredients")
+@RequestMapping("/ingredients/")
 public class IngredientController {
     private final IngredientsService ingredientsService;
 
@@ -15,7 +15,7 @@ public class IngredientController {
         this.ingredientsService = ingredientsService;
     }
 
-    @GetMapping("viewId/{ingredientId}")
+    @GetMapping("/viewId/{ingredientId}/")
     public Ingredient findIngredientById(@PathVariable String ingredientId) {
         return ingredientsService.findIngredientById(Long.parseLong(ingredientId));
     }
