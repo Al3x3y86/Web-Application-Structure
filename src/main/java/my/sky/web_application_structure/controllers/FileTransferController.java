@@ -15,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 
 @RestController()
-@RequestMapping("files")
+@RequestMapping("/files")
 @Tag(name = "Отправка или загрузка файлов",
         description = "Операции для отправки и получения (сохранения) файлов")
 public class FileTransferController {
@@ -28,7 +28,7 @@ public class FileTransferController {
         this.ingredientsFilesService = ingredientsFilesService;
     }
 
-    @GetMapping("recipeExport")
+    @GetMapping("/recipeExport")
     @Operation(summary = "Сохранение файла с рецептами на компьютер пользователя")
     public ResponseEntity<InputStreamResource> downloadFile() throws FileNotFoundException {
         File file = recipeFilesService.getFile();
@@ -44,7 +44,7 @@ public class FileTransferController {
         }
     }
 
-    @PostMapping(value = "recipeImport", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/recipeImport", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Загрузка сохраненного файла с рецептами с компьютера пользователя")
     public ResponseEntity<Void> uploadRecipesFile(@RequestParam MultipartFile inputFile) {
         recipeFilesService.cleanRecipeFile();
@@ -60,7 +60,7 @@ public class FileTransferController {
         return ResponseEntity.internalServerError().build();
     }
 
-    @PostMapping(value = "ingredientsImport", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/ingredientsImport", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Загрузка сохраненного файла с ингредиентами с компьютера пользователя")
     public ResponseEntity<Void> uploadIngredientsFile(@RequestParam MultipartFile inputFile) {
         ingredientsFilesService.cleanIngredientsFile();
