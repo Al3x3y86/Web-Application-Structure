@@ -67,4 +67,6 @@ public class IngredientController {
     public Map<Long, Ingredient> viewAllIngredients() {
         return ingredientsService.viewAllIngredients();
     }
+
+
 }
