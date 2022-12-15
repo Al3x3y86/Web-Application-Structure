@@ -18,16 +18,16 @@ public class IngredientsService {
         return ingredientsRepository.findById(ingredientId);
     }
 
-    public Map<Long, Ingredient> addIngredient(Ingredient ingredient) {
+    public boolean addIngredient(Ingredient ingredient) {
         return ingredientsRepository.add(ingredient);
     }
 
-    public Map<Long, Ingredient> updateIngredient (Long ingredientID, Ingredient ingredient){
+    public boolean updateIngredient (Long ingredientID, Ingredient ingredient){
         return ingredientsRepository.update(ingredientID, ingredient);
     }
 
-    public void deleteIngredient(Long ingredientID){
-        ingredientsRepository.delete(ingredientID);
+    public boolean deleteIngredient(Long ingredientID){
+        return ingredientsRepository.delete(ingredientID);
     }
 
     public Map<Long, Ingredient> viewAllIngredients() {

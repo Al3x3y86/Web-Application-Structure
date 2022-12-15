@@ -15,23 +15,19 @@ public class RecipeService {
     }
 
     public Recipe findRecipeById(Long recipeID) {
-        Recipe recipe = recipeRepository.findById(recipeID);
-        if (recipe == null) {
-            throw new IllegalArgumentException();
-        }
-        return recipe;
+        return recipeRepository.findById(recipeID);
     }
 
-    public Map<Long, Recipe> addRecipe(Recipe recipe) {
+    public boolean addRecipe(Recipe recipe) {
         return recipeRepository.add(recipe);
     }
 
-    public Map<Long, Recipe> updateRecipe (Long recipeID, Recipe recipe){
+    public boolean updateRecipe (Long recipeID, Recipe recipe){
         return recipeRepository.update(recipeID, recipe);
     }
 
-    public void deleteRecipe(Long recipeID){
-        recipeRepository.delete(recipeID);
+    public boolean deleteRecipe(Long recipeID){
+        return recipeRepository.delete(recipeID);
     }
 
     public Map<Long, Recipe> viewAllRecipes(){

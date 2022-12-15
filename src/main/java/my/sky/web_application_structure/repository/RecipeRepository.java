@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
+import my.sky.web_application_structure.model.Ingredient;
 import my.sky.web_application_structure.model.Recipe;
 import my.sky.web_application_structure.service.RecipeFilesService;
 import org.apache.commons.lang3.StringUtils;
@@ -41,9 +42,37 @@ public class RecipeRepository implements IdRepository<Recipe> {
         return json;
     }
 
+    public String txtFromList(){
+        String result = "";
+        String ingredients = "";
+        String cookingSteps = " ";
+        if (recipeStorage.isEmpty()) {
+            result = "Список рецептов пуст, пожалуйста добавьте рецепты";
+        } else {
+            for (Recipe r: recipeStorage.values()) {
+                for (int i = 0; i < r.getIngredientsList().size(); i++) {
+                    Ingredient bufferIngredient = r.getIngredientsList().get(i);
+                    ingredients = ingredients + bufferIngredient.getTitleIngredient() + " — " +
+                            bufferIngredient.getAmount() + " " +
+                            bufferIngredient.getMeasureUnit() + "." + "\n";
+                }
+                for (int i = 0; i < r.getCookingInstruction().size(); i++) {
+                    cookingSteps = cookingSteps + r.getCookingInstruction().get(i) + "\n";
+                }
+                result = result + r.getTitleRecipe() + "\n" +
+                        "Время приготовления: " + r.getCookingTimeMinutes() + " минут." + "\n" +
+                        "Ингредиенты:" + "\n" + ingredients + "\n" +
+                        "Инструкция приготовления:" + "\n" + cookingSteps + "\n";
+                ingredients = "";
+                cookingSteps = "";
+            }
+        }
+        return result;
+    }
+
     private Map<Long, Recipe> listFromFile(){
         try {
-            String json = recipeFilesService.readRecipesFromFile();
+            String json = recipeFilesService.readRecipesFromJsonFile();
             if (StringUtils.isNotEmpty(json) || StringUtils.isNotBlank(json) ){
                 recipeStorage = new ObjectMapper().readValue(json, new TypeReference<>(){});
             }
@@ -53,8 +82,9 @@ public class RecipeRepository implements IdRepository<Recipe> {
         return recipeStorage;
     }
 
+
     @Override
-    public Map<Long, Recipe> add(Recipe recipe) {
+    public boolean add(Recipe recipe) {
         if (checkInputObject(recipe) & !recipeStorage.containsValue(recipe)) {
             idCounter = 1L;
             while (recipeStorage.containsKey(idCounter)){
@@ -62,10 +92,11 @@ public class RecipeRepository implements IdRepository<Recipe> {
             }
             recipeStorage.put(idCounter, recipe);
             idCounter++;
-            recipeFilesService.saveRecipesToFile(jsonFromList());
-            return recipeStorage;
+            recipeFilesService.saveRecipesToJsonFile(jsonFromList());
+            recipeFilesService.saveRecipesToTxtFile(txtFromList());
+            return true;
         }
-        return null;
+        return false;
     }
 
     @Override
@@ -73,33 +104,34 @@ public class RecipeRepository implements IdRepository<Recipe> {
         if (recipeStorage.containsKey(id)) {
             return recipeStorage.get(id);
         } else {
-            throw new IllegalArgumentException("Рецепт с номером " + id + " отсутствует!");
+            return null;
         }
     }
 
     @Override
-    public Map<Long, Recipe> update(Long id, Recipe recipe) {
+    public boolean update(Long id, Recipe recipe) {
         if (!recipeStorage.containsKey(id)){
             throw new IllegalArgumentException("С таким номером рецепт отсутствует");
         }
         if (recipe != null){
             recipeStorage.remove(id);
             recipeStorage.put(id, recipe);
-            recipeFilesService.saveRecipesToFile(jsonFromList());
-            return recipeStorage;
-        } else {
-            throw new IllegalArgumentException("Поля рецепта для обновления не заполнены");
+            recipeFilesService.saveRecipesToJsonFile(jsonFromList());
+            recipeFilesService.saveRecipesToTxtFile(txtFromList());
+            return true;
         }
+        return false;
     }
 
     @Override
-    public void delete(Long id) {
+    public boolean delete(Long id) {
         if (recipeStorage.containsKey(id)){
             recipeStorage.remove(id);
-            recipeFilesService.saveRecipesToFile(jsonFromList());
-        } else {
-            throw new IllegalArgumentException("С таким номером рецепт отсутствует");
+            recipeFilesService.saveRecipesToJsonFile(jsonFromList());
+            recipeFilesService.saveRecipesToTxtFile(txtFromList());
+            return true;
         }
+        return false;
     }
 
     @Override

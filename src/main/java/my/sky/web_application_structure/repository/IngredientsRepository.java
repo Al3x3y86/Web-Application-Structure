@@ -56,7 +56,7 @@ public class IngredientsRepository implements IdRepository<Ingredient> {
     }
 
     @Override
-    public Map<Long, Ingredient> add(Ingredient ingredient) {
+    public boolean add(Ingredient ingredient) {
         if (checkInPutObject(ingredient) & !ingredientsStorage.containsValue(ingredient)) {
             idCounter = 1L;
             while (ingredientsStorage.containsKey(idCounter)) {
@@ -65,9 +65,9 @@ public class IngredientsRepository implements IdRepository<Ingredient> {
             ingredientsStorage.put(idCounter, ingredient);
             idCounter++;
             ingredientsFilesService.saveIngredientsToFile(jsonFromList());
-            return ingredientsStorage;
+            return true;
         }
-        return null;
+        return false;
     }
 
     @Override
@@ -80,7 +80,7 @@ public class IngredientsRepository implements IdRepository<Ingredient> {
     }
 
     @Override
-    public Map<Long, Ingredient> update(Long id, Ingredient ingredient) {
+    public boolean update(Long id, Ingredient ingredient) {
         if (!ingredientsStorage.containsKey(id)){
             throw new IllegalArgumentException("С таким номером ингредиент отсутствует");
         }
@@ -88,20 +88,19 @@ public class IngredientsRepository implements IdRepository<Ingredient> {
             ingredientsStorage.remove(id);
             ingredientsStorage.put(id, ingredient);
             ingredientsFilesService.saveIngredientsToFile(jsonFromList());
-            return ingredientsStorage;
-        } else {
-            throw new IllegalArgumentException("Поля ингредиента для обновления не заполнены");
+            return true;
         }
+        return false;
     }
 
     @Override
-    public void delete(Long id) {
+    public boolean delete(Long id) {
         if (ingredientsStorage.containsKey(id)){
             ingredientsStorage.remove(id);
             ingredientsFilesService.saveIngredientsToFile(jsonFromList());
-        } else {
-            throw new IllegalArgumentException("С таким номером ингредиент отсутствует");
+            return true;
         }
+        return false;
     }
 
     @Override

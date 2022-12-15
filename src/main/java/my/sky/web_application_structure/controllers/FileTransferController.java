@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import my.sky.web_application_structure.service.IngredientsFilesService;
 import my.sky.web_application_structure.service.RecipeFilesService;
+import my.sky.web_application_structure.service.RecipeService;
 import org.apache.commons.io.IOUtils;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -22,16 +23,34 @@ public class FileTransferController {
 
     private final RecipeFilesService recipeFilesService;
     private final IngredientsFilesService ingredientsFilesService;
+    private final RecipeService recipeService;
 
-    public FileTransferController(RecipeFilesService recipeFilesService, IngredientsFilesService ingredientsFilesService) {
+    public FileTransferController(RecipeFilesService recipeFilesService, IngredientsFilesService ingredientsFilesService, RecipeService recipeService) {
         this.recipeFilesService = recipeFilesService;
         this.ingredientsFilesService = ingredientsFilesService;
+        this.recipeService = recipeService;
+    }
+
+    @GetMapping("recipeExportAsTxt")
+    @Operation(summary = "Сохранение файла с рецептами на компьютер пользователя в формате txt")
+    public ResponseEntity<InputStreamResource> downloadRecipesAsTxt() throws FileNotFoundException {
+        File file = recipeFilesService.getTxtFile();
+        if (file.exists()) {
+            InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+            return ResponseEntity.ok().
+                    contentLength(file.length()).
+                    contentType(MediaType.TEXT_PLAIN).
+                    header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"Recipes.txt\"").
+                    body(resource);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/recipeExport")
-    @Operation(summary = "Сохранение файла с рецептами на компьютер пользователя")
-    public ResponseEntity<InputStreamResource> downloadFile() throws FileNotFoundException {
-        File file = recipeFilesService.getFile();
+    @Operation(summary = "Сохранение файла с рецептами на компьютер пользователя в формате json")
+    public ResponseEntity<InputStreamResource> downloadFileAsJson() throws FileNotFoundException {
+        File file = recipeFilesService.getJsonFile();
         if (file.exists()) {
             InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
             return ResponseEntity.ok().
@@ -47,8 +66,8 @@ public class FileTransferController {
     @PostMapping(value = "/recipeImport", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Загрузка сохраненного файла с рецептами с компьютера пользователя")
     public ResponseEntity<Void> uploadRecipesFile(@RequestParam MultipartFile inputFile) {
-        recipeFilesService.cleanRecipeFile();
-        File file = recipeFilesService.getFile();
+        recipeFilesService.cleanRecipeJsonFile();
+        File file = recipeFilesService.getJsonFile();
         if (file != null) {
             try (FileOutputStream fos = new FileOutputStream(file)) {
                 IOUtils.copy(inputFile.getInputStream(), fos);
